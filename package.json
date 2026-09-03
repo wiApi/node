@@ -1,0 +1,43 @@
+{
+  "name": "wi-api",
+  "version": "0.1.0",
+  "description": "Official Node.js SDK for the wi-api WhatsApp platform",
+  "author": "wi-api <contato@wi.api.br>",
+  "license": "MIT",
+  "homepage": "https://docs.wi.api.br",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wi-api/node"
+  },
+  "bugs": {
+    "url": "https://github.com/wi-api/node/issues"
+  },
+  "keywords": ["whatsapp", "api", "sdk", "wi-api", "messaging"],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.0",
+    "@types/node": "^22.0.0",
+    "bun-types": "latest"
+  }
+}
