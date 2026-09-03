@@ -6,7 +6,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write   # required for npm provenance attestation
 
 concurrency:
   group: publish-node-${{ github.ref }}
@@ -41,6 +40,6 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - run: npm publish --access public --provenance
+      - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

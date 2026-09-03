@@ -1,29 +1,26 @@
-# wi-api — Node.js SDK
+# wi-api Node.js SDK
 
-[![npm](https://img.shields.io/npm/v/wi-api?style=flat-square&color=0d9373)](https://www.npmjs.com/package/wi-api)
-[![npm bundle size](https://img.shields.io/bundlephobia/minzip/wi-api?style=flat-square&color=0d9373)](https://bundlephobia.com/package/wi-api)
-[![license](https://img.shields.io/npm/l/wi-api?style=flat-square&color=0d9373)](LICENSE)
+[![npm](https://img.shields.io/npm/v/wi-api?style=flat-square)](https://www.npmjs.com/package/wi-api)
+[![npm bundle size](https://img.shields.io/bundlephobia/minzip/wi-api?style=flat-square)](https://bundlephobia.com/package/wi-api)
+[![license](https://img.shields.io/npm/l/wi-api?style=flat-square)](LICENSE)
 
-Official Node.js / TypeScript SDK for the [wi-api](https://wi.api.br) WhatsApp platform.
+Node.js and TypeScript SDK for [wi-api](https://wi.api.br). Send and receive WhatsApp messages in a few lines of code.
 
-- Zero runtime dependencies — native `fetch`, native `crypto`
-- TypeScript-first with full generics
-- ESM + CJS dual package
-- Works on Node 18+, Bun, Deno, Cloudflare Workers, and any Web API runtime
-
----
+Works on Node 18+, Bun, Deno, and Cloudflare Workers. No runtime dependencies.
 
 ## Install
 
 ```bash
 npm install wi-api
-# or
-bun add wi-api
-# or
-pnpm add wi-api
 ```
 
----
+```bash
+bun add wi-api
+```
+
+```bash
+pnpm add wi-api
+```
 
 ## Quick start
 
@@ -31,9 +28,8 @@ pnpm add wi-api
 import { Wi } from "wi-api"
 
 const wi = new Wi({ apiKey: process.env.WI_API_KEY! })
-const session = wi.session("my-instance")
 
-const msg = await session.sendText({
+const msg = await wi.session("my-instance").sendText({
   to: "5511999999999",
   text: "Hello from wi-api",
 })
@@ -41,33 +37,26 @@ const msg = await session.sendText({
 console.log(msg.messageId)
 ```
 
----
-
 ## Sessions
 
 ```typescript
-// Connect and watch for QR
+const session = wi.session("my-instance")
+
+// Start the connection flow
 await session.connect()
 
-// Poll for QR code
+// Poll for QR code (base64 PNG)
 const { qr } = await session.qr()
-// qr is a base64 PNG — render it or print to terminal
 
-// Or pair by phone number (no QR scanning needed)
+// Or pair by phone number
 const { pairCode } = await session.pairPhone("5511999999999")
-// Show pairCode to the user — they enter it on WhatsApp mobile
 
 // Check status
 const { connected, phone } = await session.status()
 
-// Disconnect (keeps session keys)
-await session.disconnect()
-
-// Logout (deletes session keys — must re-pair)
-await session.logout()
+await session.disconnect() // keeps session keys
+await session.logout()     // removes session keys
 ```
-
----
 
 ## Sending messages
 
@@ -75,79 +64,40 @@ await session.logout()
 // Text
 await session.sendText({ to: "5511999999999", text: "Hello!" })
 
-// Quote a message
-await session.sendText({
-  to: "5511999999999",
-  text: "Agreed",
-  quoted: "MESSAGE_ID",
-})
+// Reply
+await session.sendText({ to: "5511999999999", text: "Got it", quoted: messageId })
 
 // Image
-await session.sendImage({
-  to: "5511999999999",
-  url: "https://example.com/photo.jpg",
-  caption: "Check this out",
-})
+await session.sendImage({ to: "5511999999999", url: "https://example.com/photo.jpg", caption: "Look" })
 
 // Voice note
-await session.sendAudio({
-  to: "5511999999999",
-  url: "https://example.com/audio.ogg",
-  ptt: true,
-})
-
-// Video
-await session.sendVideo({
-  to: "5511999999999",
-  url: "https://example.com/clip.mp4",
-})
+await session.sendAudio({ to: "5511999999999", url: "https://example.com/audio.ogg", ptt: true })
 
 // Document
-await session.sendDocument({
-  to: "5511999999999",
-  url: "https://example.com/report.pdf",
-  filename: "Q3-report.pdf",
-})
+await session.sendDocument({ to: "5511999999999", url: "https://example.com/file.pdf", filename: "report.pdf" })
 
 // Location
-await session.sendLocation({
-  to: "5511999999999",
-  latitude: -23.5505,
-  longitude: -46.6333,
-  title: "São Paulo",
-})
-
-// Reaction
-await session.react({
-  to: "5511999999999",
-  messageId: "MESSAGE_ID",
-  emoji: "👍",
-})
+await session.sendLocation({ to: "5511999999999", latitude: -23.5505, longitude: -46.6333 })
 
 // Poll
-await session.sendPoll({
-  to: "5511999999999",
-  question: "Best stack?",
-  options: ["Bun + Elysia", "Node + Fastify", "Go + Fiber"],
-})
-```
+await session.sendPoll({ to: "5511999999999", question: "Best stack?", options: ["Bun", "Node", "Deno"] })
 
----
+// Reaction
+await session.react({ to: "5511999999999", messageId, emoji: "" })
+```
 
 ## Webhooks
 
-wi-api sends events to your endpoint signed with `x-wi-signature: sha256=<hex>`.
-
-### Next.js App Router
+wi-api signs every webhook payload with `x-wi-signature: sha256=<hex>`.
 
 ```typescript
-// app/api/webhook/route.ts
 import { createWebhookHandler } from "wi-api"
 
+// Next.js App Router
 export const POST = createWebhookHandler({
   secret: process.env.WI_WEBHOOK_SECRET!,
   async onMessage({ data }) {
-    console.log(`[${data.chat}] ${data.from}: ${data.text}`)
+    console.log(data.from, data.text)
   },
   async onConnected({ data }) {
     console.log("connected:", data.phone)
@@ -155,23 +105,13 @@ export const POST = createWebhookHandler({
 })
 ```
 
-### Hono / Elysia / any Web API runtime
-
 ```typescript
-import { createWebhookHandler } from "wi-api"
-
-const handler = createWebhookHandler({
-  secret: process.env.WI_WEBHOOK_SECRET!,
-  async onMessage({ session_id, data }) {
-    await db.messages.insert({ sessionId: session_id, ...data })
-  },
-})
-
-// Hono
+// Hono / Elysia / any Web API runtime
+const handler = createWebhookHandler({ secret: "...", onMessage: ... })
 app.post("/webhook", (c) => handler(c.req.raw))
 ```
 
-### Verify manually
+Verify manually:
 
 ```typescript
 import { verifyWebhookSignature, parseWebhookEvent } from "wi-api"
@@ -182,36 +122,33 @@ if (!valid) return new Response(null, { status: 401 })
 const event = parseWebhookEvent(rawBody)
 ```
 
----
-
 ## Error handling
 
 ```typescript
-import { Wi, WiError } from "wi-api"
+import { WiError } from "wi-api"
 
 try {
   await session.sendText({ to: "5511999999999", text: "Hello" })
 } catch (err) {
   if (err instanceof WiError) {
-    console.error(err.status, err.message, err.code)
+    console.error(err.status, err.message)
   }
 }
 ```
-
----
 
 ## Configuration
 
 ```typescript
 const wi = new Wi({
-  apiKey: "...",
+  apiKey:  process.env.WI_API_KEY!,
   baseUrl: "https://endpoint.wi.api.br", // default
   timeout: 30_000,                        // ms, default 30s
 })
 ```
 
----
+## Resources
 
-## License
-
-MIT — [wi.api.br](https://wi.api.br)
+- [npm](https://www.npmjs.com/package/wi-api)
+- [Dashboard](https://wi.api.br)
+- [Docs](https://docs.wi.api.br)
+- [Changelog](https://github.com/wiApi/node/releases)
