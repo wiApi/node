@@ -4,15 +4,21 @@
   "description": "Official Node.js SDK for the wi-api WhatsApp platform",
   "author": "wi-api <contato@wi.api.br>",
   "license": "MIT",
-  "homepage": "https://docs.wi.api.br",
+  "homepage": "https://www.npmjs.com/package/wi-api",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wi-api/node"
+    "url": "https://github.com/wiApi/node"
   },
   "bugs": {
-    "url": "https://github.com/wi-api/node/issues"
+    "url": "https://github.com/wiApi/node/issues"
   },
-  "keywords": ["whatsapp", "api", "sdk", "wi-api", "messaging"],
+  "keywords": [
+    "whatsapp",
+    "api",
+    "sdk",
+    "wi-api",
+    "messaging"
+  ],
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -24,7 +30,11 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "engines": {
     "node": ">=18.0.0"
   },
