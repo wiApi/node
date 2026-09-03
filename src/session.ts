@@ -40,7 +40,7 @@ export class Session {
     const timer = setTimeout(() => controller.abort(), this.#config.timeout)
 
     try {
-      const res = await fetch(this.#url(path), {
+      const res = await this.#config.fetch(this.#url(path), {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -62,7 +62,7 @@ export class Session {
     const timer = setTimeout(() => controller.abort(), this.#config.timeout)
 
     try {
-      const res = await fetch(this.#url(path), {
+      const res = await this.#config.fetch(this.#url(path), {
         headers: { "x-api-key": this.#config.apiKey },
         signal: controller.signal,
       })

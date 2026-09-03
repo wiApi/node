@@ -13,6 +13,7 @@ export class Wi {
       apiKey: config.apiKey,
       baseUrl: (config.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, ""),
       timeout: config.timeout ?? DEFAULT_TIMEOUT,
+      fetch: config.fetch ?? globalThis.fetch,
     }
   }
 

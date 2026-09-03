@@ -7,6 +7,11 @@ export interface WiConfig {
   baseUrl?: string
   /** Request timeout in milliseconds. Default: 30_000 */
   timeout?: number
+  /**
+   * Custom fetch implementation. Defaults to globalThis.fetch.
+   * Inject a mock in tests to intercept outgoing requests.
+   */
+  fetch?: typeof globalThis.fetch
 }
 
 // ─── Session ──────────────────────────────────────────────────────────────────
