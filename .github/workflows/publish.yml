@@ -1,0 +1,23 @@
+name: Publish
+on:
+  release:
+    types: [published]
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install
+      - run: bun run typecheck
+      - run: bun --bun run build
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm publish --access public
+        env:
+          # Add NPM_TOKEN secret in repo Settings → Secrets → Actions
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
