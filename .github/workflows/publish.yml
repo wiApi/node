@@ -6,6 +6,8 @@ on:
 
 permissions:
   contents: write
+  # npm Trusted Publishing (OIDC): no NPM_TOKEN secret; npm also attaches provenance.
+  id-token: write
 
 concurrency:
   group: publish-node-${{ github.ref }}
@@ -37,9 +39,9 @@ jobs:
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: '20'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
+      # Trusted Publishing needs npm >= 11.5.1.
+      - run: npm install -g npm@^11.5.1
       - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
