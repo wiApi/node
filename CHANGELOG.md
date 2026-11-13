@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - `createWebhookHandler` verifies with `verifyWebhook` and accepts `toleranceSeconds`
 
+### Fixed
+- TypeScript resolves the package types under `moduleResolution: "bundler"`, `"node16"` and `"nodenext"`: `exports` lists `types` first for `import` (`index.d.ts`) and `require` (`index.d.cts`). Before, the `types` condition came last and was never used
+
 ## [0.1.1] - 2026-09-03
 
 ### Added
