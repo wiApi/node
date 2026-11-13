@@ -1,8 +1,8 @@
 {
   "name": "wi-api",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Official Node.js SDK for the wi-api WhatsApp platform",
-  "author": "wi-api <contato@wi.api.br>",
+  "author": "wi-api <wi@codeatlas.com.br>",
   "license": "MIT",
   "homepage": "https://www.npmjs.com/package/wi-api",
   "repository": {
@@ -45,9 +45,9 @@
     "test": "bun test"
   },
   "devDependencies": {
-    "tsup": "^8.4.0",
-    "typescript": "^5.8.0",
-    "@types/node": "^22.0.0",
-    "bun-types": "latest"
+    "@types/node": "^26.6.5",
+    "bun-types": "^1.4.3",
+    "tsup": "^9.0.0",
+    "typescript": "^6.0.3"
   }
 }

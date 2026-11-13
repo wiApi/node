@@ -74,3 +74,16 @@ describe("WiError.fromResponse", () => {
     expect(err.status).toBe(503)
   })
 })
+
+describe("WiError.fromResponse nested shape", () => {
+  test("reads { error: { code, message } }", async () => {
+    const res = new Response(
+      JSON.stringify({ error: { code: "key_forbidden", message: "read-only", requiredScope: "messages:send" } }),
+      { status: 403, headers: { "content-type": "application/json" } },
+    )
+    const err = await WiError.fromResponse(res)
+    expect(err.message).toBe("read-only")
+    expect(err.code).toBe("key_forbidden")
+    expect(err.status).toBe(403)
+  })
+})

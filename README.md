@@ -88,7 +88,7 @@ await session.react({ to: "5511999999999", messageId, emoji: "" })
 
 ## Webhooks
 
-wi-api signs every webhook payload with `x-wi-signature: sha256=<hex>`.
+wi-api signs every webhook with `x-wi-signature-v2: t=<unix seconds>,v1=<hex>` (HMAC-SHA256 of `<t>.<rawBody>`) and also sends `x-wi-delivery-id`, `x-wi-timestamp` and `x-wi-attempt`. `createWebhookHandler` rejects deliveries older than 5 minutes (`toleranceSeconds`). The legacy body-only `x-wi-signature: sha256=<hex>` is still sent.
 
 ```typescript
 import { createWebhookHandler } from "wi-api"
@@ -114,13 +114,15 @@ app.post("/webhook", (c) => handler(c.req.raw))
 Verify manually:
 
 ```typescript
-import { verifyWebhookSignature, parseWebhookEvent } from "wi-api"
+import { verifyWebhook, parseWebhookEvent } from "wi-api"
 
-const valid = await verifyWebhookSignature(rawBody, req.headers["x-wi-signature"], secret)
+const valid = await verifyWebhook(rawBody, req.headers, secret, { toleranceSeconds: 300 })
 if (!valid) return new Response(null, { status: 401 })
 
 const event = parseWebhookEvent(rawBody)
 ```
+
+`receipt` events carry `status` (`"delivered" | "read" | "played"`), `rawType` and `messageIds[]`; use `onReceipt`.
 
 ## Error handling
 
